@@ -1,6 +1,4 @@
-!\[Python3](https://img.shields.io/static/v1?label=Python3\&labelColor=navy\&message=ok!✔\&style=plastic\&color=lightblue\&logo=PYTHON\&logoColor=lightblue)
-
-
+![Python3](https://img.shields.io/static/v1?label=Python3&labelColor=navy&message=ok!%E2%9C%94&style=plastic&color=lightblue&logo=python&logoColor=lightblue)
 
 ##### Questão 2 - Produtos
 
