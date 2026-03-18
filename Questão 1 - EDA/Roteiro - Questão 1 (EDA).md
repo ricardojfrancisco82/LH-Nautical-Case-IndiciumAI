@@ -1,5 +1,4 @@
-!\[mySQL](https://img.shields.io/static/v1?label=MySQL\&labelColor=orange\&message=ok!✔\&style=plastic\&color=lightblue\&logo=mySQL\&logoColor=lightblue)
-
+![MySQL](https://img.shields.io/static/v1?label=MySQL&labelColor=orange&message=ok!%E2%9C%94&style=plastic&color=lightblue&logo=mysql&logoColor=lightblue)
 
 
 ##### Questão 1 - EDA
