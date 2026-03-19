@@ -34,8 +34,8 @@ produtos_original['actual_category'].unique()
 
 #criando listas para uniformizar o cadastro
 
-produtos_original['actual_category'] = produtos_original['actual_category'].replace(['eletronicos', 'e l e t r ô n i c o s', 'eletrunicos', 'eletronicoz', 'eletrônicos', 'eletroniscos'], 'eletronicos') 
-produtos_original['actual_category'] = produtos_original['actual_category'].replace(['propulsao', 'propulção', 'prop', 'propulssão', 'p r o p u l s ã o', 'propução', 'propulsão', 'propulçao', 'propulsam'], 'propulsao')
+produtos_original['actual_category'] = produtos_original['actual_category'].replace(['eletronicos', 'e l e t r ô n i c o s', 'eletrunicos', 'eletronicoz', 'eletrônicos', 'eletroniscos'], 'eletrônicos') 
+produtos_original['actual_category'] = produtos_original['actual_category'].replace(['propulsao', 'propulção', 'prop', 'propulssão', 'p r o p u l s ã o', 'propução', 'propulsão', 'propulçao', 'propulsam'], 'propulsão')
 produtos_original['actual_category'] = produtos_original['actual_category'].replace(['ancoragem', 'encoragem','ancoraguem', 'ancorajm', 'a n c o r a g e m', 'ancorajem', 'encoragi', 'ancorajen', 'ancoragen'], 'ancoragem')
 produtos_original['actual_category'].unique()
 
@@ -56,6 +56,6 @@ exports = {
     }
 
 for nome_arquivo, data in exports.items():
-    data.to_csv(nome_arquivo, index=False, sep=';', encoding='utf-8-sig')
+    data.to_csv(nome_arquivo, index=False, sep=',', encoding='utf-8-sig')
     print(f"✅ Arquivo {nome_arquivo} exportado com sucesso!")
 
