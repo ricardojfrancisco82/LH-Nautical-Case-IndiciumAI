@@ -1,4 +1,4 @@
-![MySQL](https://img.shields.io/static/v1?label=MySQL&labelColor=orange&message=ok!%E2%9C%94&style=plastic&color=lightblue&logo=mysql&logoColor=lightblue)
+![SQLite](https://img.shields.io/static/v1?label=SQLite&labelColor=003B57&message=ok!%E2%9C%94&style=plastic&color=003B57&logo=sqlite&logoColor=80c6f1)
 
 
 ##### Questão 1 - EDA
