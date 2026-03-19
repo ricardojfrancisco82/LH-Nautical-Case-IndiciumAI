@@ -1,7 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?label=%E2%9A%96%20License&logo=balance-scale&logoColor=white&style=plastic)](https://opensource.org/licenses/MIT)
 ![Python3](https://img.shields.io/static/v1?label=Python3&labelColor=navy&message=ok!%E2%9C%94&style=plastic&color=lightblue&logo=python&logoColor=lightblue)
-![MySQL](https://img.shields.io/static/v1?label=MySQL&labelColor=orange&message=ok!%E2%9C%94&style=plastic&color=lightblue&logo=mysql&logoColor=lightblue)
-
+![SQLite](https://img.shields.io/static/v1?label=SQLite&labelColor=003B57&message=ok!%E2%9C%94&style=plastic&color=003B57&logo=sqlite&logoColor=80c6f1)
 
 
 #### Status do Projeto
