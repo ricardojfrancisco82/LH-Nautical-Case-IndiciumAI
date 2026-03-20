@@ -27,9 +27,16 @@ Sua missão é realizar uma análise exploratória inicial do *dataset* ***venda
 
 Informe:
 
-* Quantidade total de linhas: *9901 linhas*
+* Quantidade total de linhas: *9895 linhas*
 * Quantidade total de colunas: *6 colunas* 
 
+> SELECT COUNT(*) FROM vendas_2023_2024 
+
+COUNT(*)|
+--------+
+    9895|
+
+1 row(s) fetched.
 
 
 *PRAGMA table\_info('vendas\_2023\_2024')*
@@ -80,18 +87,18 @@ Comente sobre:
 
 Código calculando:
 
-* Quantidade total de linhas:
-* Quantidade total de colunas:
+* Quantidade total de linhas: *9895 linhas*
+* Quantidade total de colunas:  *6 colunas* 
 * Intervalo de datas analisado (data mínima e máxima):
-* Valor mínimo:
-* Valor máximo:
-* Valor médio:
+* Valor mínimo: *R$ 294,50*
+* Valor máximo: *R$ 2.222.973,00*
+* Valor médio: *R$ 263.797,83*
 
 
 
 ###### Questão 1.2 - Validação  - respondida em script
 
-* Qual é o valor máximo registrado na coluna "total"?
+* Qual é o valor máximo registrado na coluna "total"?  *R$ 2.222.973,00*
 
 
 
@@ -109,7 +116,7 @@ Com base na análise exploratória realizada, escreva um breve diagnóstico sobr
 
 
 
-Em primeira instância, partimos dos dados colhidos das vendas da loja, obtidos através de arquivo .CSV com 9901 registros de vendas, contendo os seguintes campos:
+Em primeira instância, partimos dos dados colhidos das vendas da loja, obtidos através de arquivo .CSV com 9895 registros de vendas, , exclusos aqui os registros nulos, contendo os seguintes campos:
 
 
 
@@ -143,21 +150,18 @@ Referência|Valor da Venda |
 
 Mínimo    |*R$       294,50*|
 
-Q1 (25%)  |*R$    23.057,45*|
+Q1 (25%)  |*R$    23.138,20*|
 
-Q2 (50%)  |*R$    82.162,00*|
+Q2 (50%)  |*R$    82.225,00*|
 
 Média     |*R$   263.797,83*|
 
-Q3 (75%)  |*R$   339.021,00*|
+Q3 (75%)  |*R$   339.168,00*|
 
 Máximo    |*R$ 2.222.973,00*|
 
-Vendo essas distribuições, podemos afirmar alguns pontos, a primeira é a de que, devido aos altos valroes ddas vendas, a distribuição ddas mesmas  segue fortemente tensionada aso valores mais altos, a  grande dirferença entre a média e a mediana comprova que  essa média não representa amaioria das vendas, num primeiro olhar.
-
-Outro ponto é que, analisando os quartis, é possível dizer que é grande a probabilidade de termos possíveis erros de digitação de valores dentro de um determinado numero de vendsas, tendo por base que o limite superior do tercerito quatil, quando aplicamos a regra de intervalo interquartil (IQR) indica quye vendas maiores do que o valor de R$ 812.966,32 são possíveis outliers (ou podem tratar-se de vendas de embarcações inteiras). 
-
+Vendo essas distribuições, podemos afirmar alguns pontos, a primeira é a de que, devido aos altos valores das vendas, a distribuição das mesmas  segue fortemente tensionada aso valores mais altos, a  grande diferença entre a média e a mediana comprova que  essa média não representa a maioria das vendas, num primeiro olhar.
+Outro ponto é que, analisando os quartis, é possível dizer que é grande a probabilidade de termos possíveis erros de digitação de valores dentro de um determinado numero de vendas, tendo por base que o limite superior do terceiro quartil, quando aplicamos a regra de intervalo interquartil (IQR) indica que vendas maiores do que o valor de R$ 812.966,32 são possíveis outliers (ou podem tratar-se de vendas de embarcações inteiras). 
 Quanto do volume de vendas, ao analisarmos as quantidades, temos o valor mínimo de 1 item, e o máximo de 15, sendo que a média encontrada pelos registros seria de 8, o que, de fato, descaracteriza uma possível venda de atacado, analisando apenas o quantitativo expresso nos dados. Novamente, sem avaliar a lista de produtos, para saber se pro exemplo, determinado item é vendido em caixas com grandes volumes, não é possível afirmar com certeza se a natureza da operação é estritamente reservada ao varejo.
-
-Por fim, acreditamos que há a necessidade de um refinamento e um cruzamento dos dados, priorizando uma análise com maior valor para a gestão da empresa, bem como melhor comtrole das situações que abrangem o cotidiano da loja. TEmos um volume de vendas consideravelmente robusto, E uma venda típica (obtifa pela mediana) condizente com a realidade, porém , há anecessidade de auditar os grandes valores (outliers), bem como o faturamento médio.
+Por fim, acreditamos que há a necessidade de um refinamento e um cruzamento dos dados, priorizando uma análise com maior valor para a gestão da empresa, bem como melhor controle das situações que abrangem o cotidiano da loja. Temos um volume de vendas consideravelmente robusto, E uma venda típica (obtida pela mediana) condizente com a realidade, porém , há a necessidade de auditar os grandes valores (outliers), bem como o faturamento médio.
 

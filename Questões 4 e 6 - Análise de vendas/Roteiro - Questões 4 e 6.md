@@ -59,8 +59,8 @@ Gere um gráfico que represente o prejuízo total por produto, considerando apen
 
 **Parte 3 —  Análise objetiva Responda objetivamente:**
 
-1. Qual produto concentra o maior prejuízo absoluto?  *63|Motor Elétrico Torqeedo Ion Orca Vox 186HP*
-2. O produto com maior prejuízo absoluto também é o que possui a maior porcentagem de perda? *Não, seu índice é de 38,8%* 
+1. Qual produto concentra o maior prejuízo absoluto?  *76|Motor Diesel Honda Aero 205HP*
+2. O produto com maior prejuízo absoluto também é o que possui a maior porcentagem de perda? *Não, seu índice é de 28,7%* 
 
 
 
@@ -79,7 +79,7 @@ Gere um gráfico que represente o prejuízo total por produto, considerando apen
 
 #### Questão 4.2 - Validação
 
-Qual é o id\_produto que apresentou a maior porcentagem de perda financeira relativa (maior % de prejuízo sobre sua receita) no período analisado? *136|Cabo de Nylon Bruce Flux Hydro*
+Qual é o id\_produto que apresentou a maior porcentagem de perda financeira relativa (maior % de prejuízo sobre sua receita) no período analisado? *42|Transponder Lowrance Axis, com 47,96%*
 
 
 
@@ -89,23 +89,21 @@ Explicação sobre o desenvolvimento:
 
 * Qual data de câmbio você utilizou?
 
-*O resgate fora efetuado à partir de dados resgatados do banco central, conforme mencionado anteorirmente (uma media entrquatro coletas do mesmo dia), para fins analisticos, todas as datas foram equiparadas, sem horario específico, a fim de que não houvesse problemas com as junções em SQL.*
+*O resgate fora efetuado à partir de dados resgatados do banco central, conforme mencionado anteriormente (uma media entre quatro coletas do mesmo dia), para fins analíticos, todas as datas foram equiparadas, sem horário específico, a fim de que não houvesse problemas com as junções em SQL.*
 
 * Como definiu o prejuízo?
 
-*Depois de convertidos os valores em Reais (BRL) definiu-se prejuizo como o saldo negativo existente entre a operação de venda e o valor do produto com cambio convertido na cotaçãodo dolar do dia.*
+*Depois de convertidos os valores em Reais (BRL) definiu-se prejuízo como o saldo negativo existente entre a operação de venda e o valor do produto com cambio convertido na cotação do dólar do dia.*
 
 * Alguma suposição relevante?
 
-Três dos cinco maiores prejuízos percentuais vieram de motores e eletrônicos de grande montas, sendo que nenhum dos top 10 fazem parte do grupo ancoragem. No entanto, o maior percentual foi justamente um menor da ancoragem, cujo valor unitário não chega a ser tão expressivo perto de outros valores do catalogo
+Analisando as perdas percentuais (prejuízo relativo), Pode-se verificar que sete itens tiveram prejuízo relativo igual ou maior de 40%, seno destes os dois maiores em eletrônicos, seguidos por três de propulsão. 
+Já em valores totais, três dos cinco itens (sete entre os dez primeiros) que mais deram prejuízo são da categoria propulsão, o que faz bastante sentido dado o alto valor agregado de tais itens. 
+
+**Nota:** Efetuar uma analise mais aprofundada em python com os csv resultados das consultas.
 
 
-
-
-
-
-
-Nota para relatório,, sobre obtenção de histórico do dolar comercial
+Nota para relatório, sobre obtenção de histórico do dólar comercial
 
 
 
@@ -130,6 +128,59 @@ Fonte: https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDola
 Consultado Às 14h00 deo dia 19-03-26
 
 
+Recomposto o banco de dados com suas relações em arquivo único, normalizadas as datas presentes em *vendas23_24_datas.csv* para compatibilidade com demais datas, bem como exclusão de registros nulos. 
 
-Recomposto o banco de dados com suas relações em arquivo único, normalizadas as datas presentes em vendas\_2023\_2024.csv para compatibilidade com demais datas 
 
+
+### Questão 6 - Dimensão de calendário
+
+#### Cenário
+
+O Sr. Almir quer saber: "Qual é o dia da semana (Segunda, Terça...) que temos a pior média de vendas?" para decidir se vale a pena fechar a loja nesses dias.
+
+Um estagiário fez um GROUP BY dia_semana direto na tabela de vendas e disse que a Terça-feira era ótima, com média de R$5.000,00.
+
+O problema: O estagiário esqueceu que em muitas terças-feiras a loja abriu mas vendeu zero. Como esses dias não existem na tabela de vendas (vendas_2023_2024.csv), eles foram ignorados no cálculo da média, inflando o resultado. Precisamos corrigir isso utilizando um calendário de datas (dimensão de datas)
+
+
+#### Premissas obrigatórias:
+* O período de análise deve considerar todas as datas entre a menor e a maior data_venda presentes no arquivo.
+* A loja esteve aberta em todos os dias do período (inclusive fins de semana).
+* Dias sem registro na tabela de vendas devem ser considerados como valor_venda = 0.
+* “Vendas diárias” correspondem à soma de valor_venda por dia.
+* A média de vendas por dia da semana deve considerar todos os dias do calendário, inclusive os dias sem venda.
+* O nome do dia da semana deve ser apresentado em português (Segunda-feira, Terça-feira, etc.).
+
+#### Tarefa:
+* Construa uma dimensão de datas utilizando sql 
+* Cruze a dimensão de datas com a tabela de vendas para análise (não esqueça de considerar os dias sem vendas).
+
+#### Questão 6.1 - Código SQL
+Código com:
+* Desenvolvimento de um calendário com os dias da semana (em portugues)
+* LEFT JOIN entre o calendário e a tabela de vendas
+* agregação de vendas por dia (soma de valor_venda),
+* substituição de valores nulos por zero para dias sem vendas
+
+#### Questão 6.2 - Validação
+Após considerar os dias zerados no cálculo: Qual é o Dia da Semana (ex: Domingo, Segunda...) que apresenta a menor média de vendas histórica, e qual é o valor dessa média arredondada para 2 casas decimais? *domingo*
+
+#### Questão 6.3 - Explique:
+Por que é necessário utilizar uma tabela de datas (calendário) em vez de agrupar diretamente a tabela de vendas?
+*Primeiro ponto, a dimensão calendário é uma espécie de âncora balizadora das questões de data no banco de dados, evitando assim uma descentralização exageradas dessas mesmas datas, o que ocasionaria problemas e divergências entre registros e determinadas consultas onde o fator dia fosse preponderante. Outro ponto seriam os "dias vazios" em que não houvesse venda, ou registros, que poderiam gerar quebras em analises lineares, ou até mesmo interferir negativamente em medias.* 
+
+O que aconteceria com a média de vendas se um dia da semana tivesse muitos dias sem nenhuma venda registrada?
+
+*Haveria distorção da média, pois esses dias não seriam contabilizados como dias de venda.*
+
+dia_semana_nome|media_vendas|
+---------------+------------+
+Sábado         |  3710540.55|
+Sexta-feira    |  3715003.41|
+Quinta-feira   |  3626232.44|
+Quarta-feira   |  3535265.63|
+Terça-feira    |  3627045.76|
+Segunda-feira  |  3465137.71|
+Domingo        |  3319503.57|
+
+7 row(s) fetched.

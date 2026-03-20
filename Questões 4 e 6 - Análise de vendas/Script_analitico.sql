@@ -76,4 +76,5 @@ SELECT
 	) AS percentual_perda
 FROM calculo_operacoes2 
 GROUP BY id_product
-ORDER BY percentual_perda DESC;
+ORDER BY percentual_perda DESC;*/
+
