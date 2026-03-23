@@ -7,7 +7,7 @@
 ![Scikit-learn](https://img.shields.io/static/v1?label=Scikit-learn\&labelColor=navy\&message=ok!%E2%9C%94\&style=plastic\&color=lightblue\&logo=scikitlearn\&logoColor=lightblue)
 ![Prophet](https://img.shields.io/static/v1?label=Prophet&labelColor=006699&message=ok!%E2%9C%94&style=plastic&color=008080&logo=facebook&logoColor=white)
 
-🌊 Case LH Nautical - Programa Indicium Lighthouse 2026
+🌊 **Case LH Nautical - Programa Indicium Lighthouse 2026**
 
 #### Status do Projeto
 
@@ -18,7 +18,7 @@ O objetivo principal é transformar dados brutos de vendas, produtos e custos de
 * Análise Exploratória (EDA): Identificação de padrões de consumo e performance de vendas.
 * Ciência de Dados: Previsão de demanda e sistema de recomendação de produtos.
 
-🛠️ Tecnologias e Ferramentas
+🛠️ **Tecnologias e Ferramentas**
 
 * Linguagens: Python 3.x, SQL.
 * Ambiente de Desenvolvimento: Distribuição Anaconda.
@@ -27,26 +27,39 @@ O objetivo principal é transformar dados brutos de vendas, produtos e custos de
 * Banco de Dados: SQLite (processamento local e portabilidade).
 * Relatório: Quarto (Publicado via GitHub Pages).
 
-📂 Estrutura do Repositório
+📂 **Estrutura do Repositório**
+
 ├── data/
+
 │   ├── raw/             # Arquivos CSV originais do desafio
+
 │   └── processed/       # Banco SQLite e dados limpos/normalizados
+
 ├── src/                 # Código-fonte modular
+
 │   ├── sql/             # Scripts DDL e queries de análise
+
 │   ├── data_prep/       # Scripts Python de ETL e limpeza
+
 │   └── models/          # Scripts de Previsão e Recomendação
+
 ├── notebooks/           # Roteiro passo a passo de cada questão (Questões 1 a 8)
+
 ├── docs/                # Site estático gerado pelo Quarto (GitHub Pages)
+
 ├── relatorio/           # Arquivos .qmd para composição do site web
+
 └── README.md
 
 
-🚀 Como Visualizar os Resultados
-🌐 Relatório Online (Recomendado)
-A análise completa, estruturada de forma navegável e interativa, está disponível em:
-👉 [em construção]
+🚀 **Como Visualizar os Resultados**
 
-💻 Execução Local
+🌐 *Relatório Online (Recomendado)*
+A análise completa, estruturada de forma navegável e interativa, está disponível em:
+
+👉 *[em construção]*
+
+💻 *Execução Local*
 Clone o repositório:
 
 Bash
@@ -58,7 +71,7 @@ conda env create -f environment.yml
 conda activate nautical-case
 Os notebooks explicativos estão na pasta /notebooks.
 
-💡 Principais Insights Alcançados
+💡 **Principais Insights Alcançados**
 
 * Eficiência de Margem: Identificação de categorias com maior impacto de custos logísticos na margem líquida.
 * Sazonalidade: Padrões detectados que otimizam o estoque em períodos de baixa demanda.
