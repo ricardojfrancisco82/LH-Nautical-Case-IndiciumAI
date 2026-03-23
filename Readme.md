@@ -2,19 +2,22 @@
 ![Python3](https://img.shields.io/static/v1?label=Python3&labelColor=navy&message=ok!%E2%9C%94&style=plastic&color=lightblue&logo=python&logoColor=lightblue)
 ![SQLite](https://img.shields.io/static/v1?label=SQLite&labelColor=003B57&message=ok!%E2%9C%94&style=plastic&color=003B57&logo=sqlite&logoColor=80c6f1)
 ![BCB Olinda](https://img.shields.io/static/v1?label=BCB\&labelColor=003366\&message=Olinda%20API\&style=plastic\&color=FFD700\&logo=google-cloud\&logoColor=FFD700)
+![Pandas](https://img.shields.io/static/v1?label=Pandas\&labelColor=navy\&message=ok!%E2%9C%94\&style=plastic\&color=lightblue\&logo=pandas\&logoColor=lightblue)
+![NumPy](https://img.shields.io/static/v1?label=NumPy\&labelColor=navy\&message=ok!%E2%9C%94\&style=plastic\&color=lightblue\&logo=numpy\&logoColor=lightblue)
+![Scikit-learn](https://img.shields.io/static/v1?label=Scikit-learn\&labelColor=navy\&message=ok!%E2%9C%94\&style=plastic\&color=lightblue\&logo=scikitlearn\&logoColor=lightblue)
+![Prophet](https://img.shields.io/static/v1?label=Prophet&labelColor=006699&message=ok!%E2%9C%94&style=plastic&color=008080&logo=facebook&logoColor=white)
 
 
 #### Status do Projeto
 
 
 
-🛠️Em andamento🛠️
+🛠️Finalizado🛠️
 
 
 
 Este repositório trata-se de projeto que visa instrumentar a resolução de desafio proposto pelo ***Programa LightHouse2026*** da IndiciumAI, para seleção de *trainees*. O projeto em si envolve conhecimentos práticos de análise de dados, Python e SQL.
 
-### 
 
 ### Introdução
 

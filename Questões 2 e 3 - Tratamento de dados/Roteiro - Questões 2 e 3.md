@@ -1,4 +1,7 @@
 ![Python3](https://img.shields.io/static/v1?label=Python3&labelColor=navy&message=ok!%E2%9C%94&style=plastic&color=lightblue&logo=python&logoColor=lightblue)
+![Pandas](https://img.shields.io/static/v1?label=Pandas\&labelColor=navy\&message=ok!%E2%9C%94\&style=plastic\&color=lightblue\&logo=pandas\&logoColor=lightblue)
+![NumPy](https://img.shields.io/static/v1?label=NumPy\&labelColor=navy\&message=ok!%E2%9C%94\&style=plastic\&color=lightblue\&logo=numpy\&logoColor=lightblue)
+
 
 ##### Questão 2 - Produtos
 
