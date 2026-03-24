@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 24 08:42:07 2026
+
+@author: ricardojfrancisco
+"""
+
+project:
+  type: website
+  output-dir: ../docs
+
+website:
+  title: "Case Náutico - Indicium"
+  description: "Análise de Dados, Previsão de Demanda e Sistema de Recomendação"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Resumo Executivo
+      - href: EDA.qmd
+        text: Análise Exploratória
+      - href: ETL.qmd
+        text: Modelagem & Pipeline
+      - href: vendas.qmd
+        text: Inteligência de Vendas
+      - href: ML.qmd
+        text: Previsão e Recomendação
+      - href: conclusao.qmd
+        text: Comclusões
+format:
+  html:
+    theme: flatly
+    toc: true
+    code-fold: true # Permite que o recrutador expanda ou esconda o código Python

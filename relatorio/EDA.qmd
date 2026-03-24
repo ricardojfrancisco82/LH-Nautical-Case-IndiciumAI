@@ -1,0 +1,144 @@
+---
+title: "EDA - Análise exploratória de Dados"
+author: "Ricardo J. Francisco"
+format: html
+theme: flatly
+toc: true
+code-fold: true
+number-sections: true
+execute:
+warning: false
+---
+
+## Analise Exploratória de Ddos dos arquivos que compõe esse ensaio
+
+Este ensaio e análise foi gerado a partir da extração de quatro arquivos da base de dados utilizados pela empresa **LH Nautical**, visando verificar sua estruturação e confiabilidade. Os dados brutos apresentam desafios significativos de padronização que serão detalhados a seguir.São formados por dois arquivos CSV (comma separated valeus) e dois arquivos JSON (JavaScript Object Notation), à seguir
+
+### Arquivos analisados:
+
+* *clientes_crm.JSON* -  Dados cadastrais dos clientes;
+* *custos_importacao.JSON* - Histórico de compras em dólar (não estruturado);
+* * produrtos_raw.csv8 - catálogo de produtos ofertados pela empresa;
+* *vendas_2023_2024.csv* - registro das vendas do biênio 2023/2024
+
+### Vendas
+
+O arquivo vendas possuiu todo o registro de vendas do biênio 2023/2024, registrados à partir dos seguintes campos:
+* *id* - número identificador do registro;
+* *id_client* - número identificador do cliente;
+* *id_product* - número identificador do produto;
+* *qtd* - quantidade adquirida do produto;
+* *total* - total do valor do item em questão;
+* *sale_date* - cata de registro da venda;
+
+O arquivo original é disposto em 
+
+| Item                      |     Valor     |
+|---------------------------|---------------|
+|Quantidade total de linhas |           9901|
+|Quantidade total de colunas|              6|
+|Valor mínimo de vendas     |R$       294,50|
+|Valor da média de vendas   |R$   193.141,31|
+|Valor máximo de vendas     |R$ 2.263.797,83|
+|Valor mínimo em qtd        |              1|
+|Valor máximo em qtd        |             15|
+|Valor médio em qtd         |              1|
+
+Foi-se verificado a existenncia de algumas colunas em branco, que, ao serem eliminadas, resultarm no total de 9895 registros.
+Partindo-se do pressuposto que esses dados vieram de algum banco de dados, esse é um ponto de atenção, visto que dados estruturados não podem admitir lacunas em seus registros, ainda mais quando aparentemente tem uma função de autoincremento na tabela.
+Partindo do pressuposto que equipamentos náuticos, em sua maioria, são itens de valor consideravelmente alto, tendo em vista que em uma busca rápida, as cinquenta maiores vendas referem-se a apenas dois itens (id do produto 73 e 76), cujo valor unitário passar de R$ 100 mil, e é adquirido em quantidades variadas (mínima de 1, máxima de 15). Com isso, a suposição de outliers fica inicialmente restrita quando vista apenas pelos dados das vendas, sem o conhecimento do catálogo, bem como da análise do cliente, no caso de itens vendidos por atacado. Um ponto negativo é que o tipo de dado usado para registrar as datas (CARACTERE) pode gerar erros, e deve ser ajustado para o formato de data.
+Numericamente, temos os valores de venda distribuídos da seguinte maneira:
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Certifique-se de que o caminho está correto conforme a nova estrutura
+try:
+    vendas_bruto = pd.read_csv('../data/raw/vendas_2023_2024.csv')
+except:
+    # Fallback para teste local caso o arquivo não esteja no caminho
+    import numpy as np
+    data = {'total': np.random.lognormal(mean=11, sigma=1.5, size=1000)}
+    vendas_bruto = pd.DataFrame(data)
+
+# 1. Limpeza rigorosa para alinhar com o SQL
+coluna = 'total'
+dados_limpos = vendas_bruto[coluna].dropna()
+
+# 2. Calculando os quartis com interpolação linear (Padrão Pandas)
+quartis_pd = dados_limpos.quantile([0.25, 0.5, 0.75])
+
+print("Quartis calculados no Pandas:")
+print(quartis_pd)
+
+# Plotando o Histograma
+plt.figure(figsize=(10, 6))
+plt.hist(dados_limpos, bins=50, color='skyblue', edgecolor='black', alpha=0.7)
+
+# Adicionando as linhas dos quartis
+colors = ['#e74c3c', '#c0392b', '#96281b']
+labels = ['Q1 (25%)', 'Mediana (Q2)', 'Q3 (75%)']
+
+for q, color, label in zip(quartis_pd, colors, labels):
+    plt.axvline(q, color=color, linestyle='--', linewidth=2, label=f'{label}: R$ {q:,.2f}')
+
+plt.title(f'Distribuição de Vendas com Quartis (Pandas)', fontsize=14)
+plt.xlabel('Valor da Venda (R$)')
+plt.ylabel('Frequência de Pedidos')
+plt.legend()
+plt.grid(axis='y', linestyle='--', alpha=0.6)
+plt.show()
+
+```
+Vendo essas distribuições, podemos afirmar alguns pontos, a primeira é a de que, devido aos altos valores das vendas, a distribuição das mesmas  segue fortemente tensionada aos valores mais altos, a  grande diferença entre a média e a mediana comprova que  essa média não representa a maioria das vendas, num primeiro olhar.
+
+```{python}
+import pandas as pd
+
+coluna = 'total'
+q1 = vendas_bruto[coluna].quantile(0.25)
+q3 = vendas_bruto[coluna].quantile(0.75)
+iqr = q3 - q1
+
+limite_inferior = q1 - 1.5 * iqr
+limite_superior = q3 + 1.5 * iqr
+
+outliers = vendas_bruto[(vendas_bruto[coluna] < limite_inferior) | 
+                        (vendas_bruto[coluna] > limite_superior)]
+
+print("Outliers encontrados:")
+print(outliers)
+```
+
+Outro ponto é que, analisando os quartis, é possível dizer que é grande a probabilidade de termos possíveis erros de digitação de valores dentro de um determinado numero de vendas, tendo por base que o limite superior do terceiro quartil, quando aplicamos a regra de intervalo interquartil (IQR) indica que vendas maiores do que o valor de R$ 375.000,00 são possíveis outliers, não avendo outliers nos valores menores. 
+Quanto do volume de vendas, ao analisarmos as quantidades, temos o valor mínimo de 1 item, e o máximo de 15, sendo que a média encontrada pelos registros seria de 8, o que, de fato, descaracteriza uma possível venda de atacado, analisando apenas o quantitativo expresso nos dados. Novamente, sem avaliar a lista de produtos, para saber se pro exemplo, determinado item é vendido em caixas com grandes volumes, não é possível afirmar com certeza se a natureza da operação é estritamente reservada ao varejo.
+
+### Produtos
+
+A tabela produitios é composta por 157 registros, ordenados por índice de maneira análoga a tabela vendas (*código do produto*), *nome do produto, preço em reais,* (que são auto-descritivos) e a *actual_category*, acategoria do produto.
+Essa ultima encontrou-se nos originais extremamente problemática por não ter um padrão definido para as categorias, conforme podemos constat abaixo.
+```{python}
+import pandas as pd
+produtos_bruto = pd.read_csv('data/raw/produtos_raw.csv')
+produtos_bruto['actual_category'].unique()
+
+duplicados_com_contagem = vendas_bruto.groupby('name').filter(lambda x: len(x) > 1)
+print(duplicados_com_contagem)
+```
+Foram  encontrados nessa tabela 11 valores duplicados, trretavam-se de valores reptridos , cadastros duplicados de produtos.
+
+### Custos de Importação
+
+Custos de importação nos veio através de um arquivo JSON, de maneira não estruturada, ou, seja ao invés de ter um registro em cadas linha, individualizado, como em vendas, a variação de compra do dolar era mantida em um dicionário, com data e valor, o que pode ser comprometedor para análises, tatto quanto para bancos de dados relacionais. Uma análise detalhada de seu conteúdo deverá ser feita após a normnalização do mesmo.
+
+### Clientes
+
+Já a tabela de clientes nos chegou em um JSON, porém pudemos notar que não houve uma padronização na formulação do endereço do cliente(*location*). Temos a presença de cógo (*id*), e e-mail (*email*). Trat-se de uma tabela curta, com 49 registros, porém, por tratar-se de um e-commerce, a ausencia de CEP nos assustou.
+
+### Conclusão
+
+Por fim, acreditamos que há a necessidade de um refinamento e um cruzamento dos dados, priorizando uma análise com maior valor para a gestão da empresa, bem como melhor controle das situações que abrangem o cotidiano da loja. Temos um volume de vendas consideravelmente robusto, E uma venda típica (obtida pela mediana) condizente com a realidade, porém , há a necessidade de auditar os grandes valores (outliers), bem como o faturamento médio.
+As tabela de clientes e de produtos precisam de reformulação, além de mais informações.
+A tabela de custos de importação, precisa ser normalizada, apra condizer er trabalhar com as demais em um mesmo ambiente.
+

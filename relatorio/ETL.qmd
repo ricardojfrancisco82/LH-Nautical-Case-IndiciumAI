@@ -1,0 +1,95 @@
+---
+title: "EDA - Análise exploratória de Dados"
+author: "Ricardo J. Francisco"
+format: html
+theme: flatly
+toc: true
+code-fold: true
+number-sections: true
+execute:
+warning: false
+---
+
+## Extração, transformação e carregamento dos dados
+
+Para tal, fora utilizado tecnoicas usando análise em SQL, persistindo os dados em bancos de dados compatíveis com o SQLite3 e usando o aplicativo Dbeaver, para consultar rápidas e visualizações de como seria um possível banco com essas informações juntas. Lembrando que, como constatato anteriormente, temois um arquivo não estruturado entre os demnais, que até partilham de características de um banco estruturado.
+Na unidificação das tabelas em um único banco, utilizmos da seguinte script:
+
+```{sql}
+--Criando as  tabelas, capos e suas relaçoes
+
+CREATE TABLE produtos (
+    code INTEGER PRIMARY KEY,
+    name TEXT,
+    actual_category TEXT,
+    price REAL
+);
+
+CREATE TABLE custos_importacao (
+    product_id INTEGER,
+    name TEXT,
+    category TEXT,
+    usd_price REAL,
+    start_date TEXT,
+    -- relaçoes externas
+    FOREIGN KEY (product_id) REFERENCES produtos(code)
+);
+
+CREATE TABLE historico_dolar (
+    data_cotacao TEXT PRIMARY KEY,
+    cotacao_venda REAL,
+    id INTEGER
+);
+
+CREATE TABLE clientes_crm (
+    code INTEGER PRIMARY KEY,
+    full_name TEXT,
+    location TEXT,
+    email TEXT
+);
+
+CREATE TABLE vendas_2023_2024 (
+	id INTEGER PRIMARY KEY,
+	id_client INTEGER,
+	id_product INTEGER,
+	qtd INTEGER,
+	total REAL,
+	sale_date TEXT,
+	--relaçoes externas
+	FOREIGN KEY (id_product) REFERENCES produtos(code),
+	FOREIGN KEY (id_client) REFERENCES clientes_crm(code)
+);
+
+```
+
+Aqui, pudemos fazer a integração e a correlação entre as tabelas, criando um vinculo entre elas. Nesse momento, como os dados são poucos e a anlise ainda é primária, optamos por não otimizar o banco, o que será segerido mais tarde.
+No entanto foi necessário "achatar" as listas presentes na tabela de custos de importação, para que ela see adequasse a essa estrutura. Após esse feito, obtivemos 1260 registros nesa tabela.
+Na planilha ade produtos, reunimos as categorias organizando-as em apenas três: *eletrônicos, propulsão e ancoragem.
+Os formatos em data foram convertido s em data, no formato de trabalho do pandas, até para que as relaçoes entre as tabelas pudessem ser concretizadas, e consultas em SQL com JON usando datas pudessem se autorreferenciar com fluidez.
+Foram excluídas as duplicatas presentes na planilha produtos, excluidos os campos em branco de vendas. Os valores foram normalizados em valores nuimericos, pois alguns preçõs estãm com símbolos de R$ ou US$. Isso também se torna necessário para os sistemas os reconheçam como numeros, e,assim, esejam possiveis operações sobre eles sem a adição de camadas de interpreção adioconais por demais softwares.
+Para garantir a reprodutibilidade e a manutenção do projeto, os scripts de processamento foram separados por responsabilidade na pasta src/py_etl/. Conforme visualizado no repositório, a divisão segue a lógica abaixo:
+
+📂 Pasta: src/py_etl/
+Esta pasta centraliza toda a inteligência de transformação de dados antes da carga no banco de dados SQLite.
+
+Converter JSON.py:
+Função: Script utilitário responsável pela leitura dos arquivos brutos em formato JSON (clientes_crm.json e custos_importacao.json).
+Ação: Realiza o parsing inicial e lida com codificações de caracteres (UTF-8) para evitar erros de leitura.
+
+Q2_normalizar_produtos.py:
+Função: Focado na Questão 2 do desafio.
+Ação: Realiza a limpeza da tabela de produtos, tratando as categorias inconsistentes, removendo duplicatas e padronizando os preços para o formato numérico (float).
+
+Q3_Normalizar_custos_importacao.py:
+Função: Focado na Questão 3 do desafio.
+Ação: Responsável pela tarefa mais complexa da ETL — o "achatamento" (flattening) das listas de histórico de preços e datas contidas no JSON original, transformando-as em registros tabulares para o banco relacional.
+
+## Fluxo de Dados (Lineage)
+
+O fluxo de dados do projeto segue o seguinte caminho:
+
+data/raw/ (Arquivos Brutos)
+➡️ src/py_etl/ (Scripts de Transformação)
+➡️ data/processed/nautical_db.sqlite (Banco de Dados Consolidado)
+
+Tais arquivos encontram-se disponíveis [nesse repositório.](https://github.com/ricardojfrancisco82/LH-Nautical-Case-IndiciumAI/blob/main/src/py_etl/Q2_normalizar_produtos.py).

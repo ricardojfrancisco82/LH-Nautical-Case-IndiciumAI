@@ -1,0 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 24 08:49:23 2026
+
+@author: ricardojfrancisco
+"""
+
