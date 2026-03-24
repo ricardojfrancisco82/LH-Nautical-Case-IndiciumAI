@@ -7,7 +7,7 @@ toc: true
 code-fold: true
 number-sections: true
 execute:
-warning: false
+    warning: false
 ---
 
 ## Analise Exploratória de Ddos dos arquivos que compõe esse ensaio
@@ -95,6 +95,8 @@ Vendo essas distribuições, podemos afirmar alguns pontos, a primeira é a de q
 
 ```{python}
 import pandas as pd
+
+vendas_bruto = pd.read_csv('data/raw/vendas_2023_2024.csv')
 
 coluna = 'total'
 q1 = vendas_bruto[coluna].quantile(0.25)

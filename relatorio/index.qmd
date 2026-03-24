@@ -1,7 +1,21 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Mar 24 08:47:26 2026
+---
+title: "Índice"
+author: "Ricardo J. Francisco"
+format: html
+theme: flatly
+toc: true
+code-fold: true
+number-sections: true
+execute:
+    warning: false
+---
 
-@author: ricardojfrancisco
-"""
+## Introdução
 
+Este relatório apresenta uma análise exploratória de dados (EDA) extraída de quatro arquivos da base da LH Nautical: clientescrm.json (dados de clientes), custosimportacao.json (histórico de compras em dólar), produtosraw.csv (catálogo de produtos) e vendas20232024.csv (registros de vendas do biênio 2023-2024). O objetivo é avaliar a estrutura, qualidade e insights iniciais desses dados brutos, identificando desafios como inconsistências em categorias, duplicatas e formatos não estruturados, além de propor refinamentos via ETL e modelagem em SQLite para análises financeiras e preditivas.
+​Os códigos de campos no Quarto — uma ferramenta open-source para criar relatórios dinâmicos em HTML, PDF ou outros formatos a partir de Markdown, YAML e código executável (como Python ou SQL); ou seja, quando houver um campo com código, apenas clique para executá-lo, e logo aparecera o gráfico ou elemento faltante para a leitura da análise.
+Lembrando que todo omateial gerado nessa análise pode ser visualizado, baixado e até mesmo alterado no meu github, [neste link.]('https://github.com/ricardojfrancisco82/LH-Nautical-Case-IndiciumAI/blob/main/src/py_etl/Q3_Normalizar%20custos_importacao.py')
+
+Agradeço imensamente as colaborações e críticas construtivas que puderem nos ser repassadas. 
+
+Grato.

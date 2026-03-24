@@ -1,7 +1,272 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Mar 24 08:49:23 2026
+---
+title: "Machine Learning - Soluções"
+author: "Ricardo J. Francisco"
+format: html
+theme: flatly
+toc: true
+code-fold: true
+number-sections: true
+execute:
+    warning: false
+---
 
-@author: ricardojfrancisco
-"""
+## Um passo a frente, com sistemas de recomendação e previsões de demanda
+
+O mundo contemporâneo ive uma inflação de dados, e a LH Náutica não é exceção. Vemos até aqui algumas dificuldades na administração e tratamento cotidiano desses dados, o que tem gerado insights muitas vezes confusos, e obrigando os gestores a trabalharem com o *"feeeling"*
+Entretanto, se pudessemos fazer algo além de apenas arrumar os dados e dar um fluxo dinâmico organizado para esta empresa.
+Para tal, verificamos o rpoblema de gerenciamento de estoque e sugerimos um modelo preditivo que diga exatamente quantas unidades venderemos no próximo mês para ajustar as compras com fornecedores.
+
+
+### Parâmetros utilizados no ensaio
+
+* O período de treino foram os dados até 31/12/2023.
+* O período de teste do modelo foi todo o mês de Janeiro de 2024.
+* A previsão foi feita em base diária.
+* Não foram utilizados dados futuros no treino.
+* Consideramos apenas o produto: "Motor de Popa Yamaha Evo Dash 155HP", para fins de estudo de caso
+
+### Teste 1 - usando um sistema de series de tempo com Prophet
+
+Primeiramente usamos a ferramenta **Prophet,**  criada pelo Facebook para previsão de séries temporais, especialmente útil em dados com forte sazonalidade e tendências não lineares. Ele é simples de usar, robusto contra valores ausentes e outliers.
+Sua sintaxe é simples, não necessitando de muita expertise para lidar com o modelo, sabe lidar bem com dados faltantes e é justamente o tipo de ferramente em que negócios que não tem tanto orçamento para BigData podem recorrer.
+
+| Data       | Venda_Real | Previsao_Prophet | Erro_Absoluto  |
+|------------|------------|------------------|----------------|
+| 2024-01-01 | 0          | -61.87           | 61.87          |
+| 2024-01-02 | 0          | -64.55           | 64.55          |
+| 2024-01-03 | 0          | -88.71           | 88.71          |
+| 2024-01-04 | 0          | -104.55          | 104.55         |
+| 2024-01-05 | 0          | -114.44          | 114.44         |
+| 2024-01-06 | 0          | -119.78          | 119.78         |
+| 2024-01-07 | 0          | -139.53          | 139.53         |
+| 2024-01-08 | 0          | -159.38          | 159.38         |
+| 2024-01-09 | 0          | -164.26          | 164.26         |
+| 2024-01-10 | 0          | -189.51          | 189.51         |
+| 2024-01-11 | 0          | -205.26          | 205.26         |
+| 2024-01-12 | 0          | -213.86          | 213.86         |
+| 2024-01-13 | 0          | -216.69          | 216.69         |
+| 2024-01-14 | 0          | -232.74          | 232.74         |
+| 2024-01-15 | 0          | -247.73          | 247.73         |
+| 2024-01-16 | 0          | -246.67          | 246.67         |
+| 2024-01-17 | 0          | -264.97          | 264.97         |
+| 2024-01-18 | 0          | -272.88          | 272.88         |
+| 2024-01-19 | 0          | -272.87          | 272.87         |
+| 2024-01-20 | 0          | -266.46          | 266.46         |
+| 2024-01-21 | 11         | -272.80          | 283.80         |
+| 2024-01-22 | 0          | -266.75          | 266.75         |
+| 2024-01-23 | 0          | -266.51          | 266.51         |
+| 2024-01-24 | 0          | -274.65          | 274.65         |
+| 2024-01-25 | 0          | -272.58          | 272.58         |
+| 2024-01-26 | 0          | -262.94          | 262.94         |
+| 2024-01-27 | 0          | -247.41          | 247.41         |
+| 2024-01-28 | 0          | -245.26          | 245.26         |
+| 2024-01-29 | 0          | -242.51          | 242.51         |
+| 2024-01-30 | 0          | -224.43          | 224.43         |
+| 2024-01-31 | 0          | -226.71          | 226.71         |
+
+Entretanto, pudemos verificar observando as vendas que boa parte do catálogo da loja são de bens de grande monta, o que, por si só dificulta muito o processo de coleta de dados.
+E foi exatamante o que ocorreu com essa ferrramenta, como selecionamos um motor, que não tem muita saida, e na base de dados gera muitos dias com vendas iguais a zero, o modelo acabou gerando uma MAE (Mean Absolute Error, ou erromedio absoluto) de maiis de 200, o que geraria um estoque de alto valor, que demoraria para ser esgotado se seguissemos esssa predição.
+
+### Teste 2 - Usandop um modelo matemático de médias
+
+Dado esse cenário de evndas esporádicas, e também tendo em vista um cenário de dados que ainda não tem uma temporalidade grande o suficiente para trazer robustez a uma anãlise feita da maneira anteior, optamos por um modelo mias simples, porém que envolve médias  móveis dos ultimos sete dias, sendo revisdtas diariamente.
+Esse modelo tem como vantagem gerar uma suavização das mudanças, não sendo tão abruto, porém sua desvantagem é que ele é menos sensível as sazonalidades, por exemplo, um evento náutico só aparecerá nas estatísticas sete dias após ocorrer.
+
+| Data       | Venda_Real | Previsao_MM7         |  Erro_Absoluto         |
+|------------|------------|----------------------|------------------------|
+| 2024-01-01 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-02 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-03 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-04 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-05 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-06 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-07 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-08 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-09 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-10 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-11 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-12 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-13 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-14 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-15 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-16 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-17 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-18 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-19 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-20 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-21 | 11.0       | 0.0                  | 11.0                   |
+| 2024-01-22 | 6.0        | 1.5714285714285714   | 4.428571428571429      |
+| 2024-01-23 | 0.0        | 2.4285714285714284   | 2.4285714285714284     |
+| 2024-01-24 | 0.0        | 2.4285714285714284   | 2.4285714285714284     |
+| 2024-01-25 | 0.0        | 2.4285714285714284   | 2.4285714285714284     |
+| 2024-01-26 | 0.0        | 2.4285714285714284   | 2.4285714285714284     |
+| 2024-01-27 | 0.0        | 2.4285714285714284   | 2.4285714285714284     |
+| 2024-01-28 | 0.0        | 2.4285714285714284   | 2.4285714285714284     |
+| 2024-01-29 | 0.0        | 0.8571428571428571   | 0.8571428571428571     |
+| 2024-01-30 | 0.0        | 0.0                  | 0.0                    |
+| 2024-01-31 | 0.0        | 0.0                  | 0.0                    |
+
+Com esta ultima ferramenta, o MAE ficou num valor muito mais abaico , de 0,996. ou seja, um unico motor excedente no estoque.
+
+### Teste 3 - Um simples sistema de recomendação
+
+Sistemas de recomendação são ferramentas corriqueiras de e-commerce, porém, dependem de uma grande numeros de dados que se correlacionem entre si. Aqui fizemos um pequeno ensaio para veridficar se, dentro do escopo de nossos dados, podemos geral algo de semelhante para auxiliar os vendedores, ou até mesmo poder instruir melhor nosso site de e-commerce.
+Aqui, criamos um cenário tentando vincular quais itens poderiamos recomendar quando o cliente se interessa pelo item “GPS Garmin Vortex Maré Drift”.
+Para tal, usamos uma ferramenta matemártica, a similaridade de cosseno é o resultado da relação existente entre as vendas de produtos, com a conversão das ocorrências como um vetor, onde um ângulo de zero representa que os vetores apontam para a mesma direção, ou seja, são 100%$ compatíveis entre si.
+Para construir um sistema de recomendação de produtos, com base no produto anterior selecionado e por similaridades, o primeiro passo é criar uma matriz que relaciona as aquisições dos clientes e os produtos em si. O resultado dessa matriz, é no caso uma linha que registra a quantidade de ocorrências de compra dos produtos, que situam-se nas colunas. *O próximo passo foi converter os valores registrados em booleano, pois só queríamos saber da convergência (haver compras relacionados) ou não dos produtos, chegando a similaridade de cosseno a ser comaprada entre os itens.
+Com isso, chegamos aos seguintes valores.
+
+|id_product|nome                                                |27 - GPS Garmin Vortex Maré Drift |
+|----------|----------------------------------------------------|----------------------------------|
+|94        |Motor de Popa Volvo Magnum 276HP                    |0.869626356546304                 |
+|11        |GPS Furuno Swift Leviathan Poseidon                 |0.8680370799067412                |
+|35        |Radar Furuno Swift                                  |0.8539125638299668                |
+|1         |Transponder AIS Mare Magnum                         |0.8500000000000004                |
+|115       |Cabo de Nylon Delta Force Magnum Leviathan          |0.8500000000000004                |
+|18        |Radio Simrad Axis                                   |0.8464321404702527                |
+|135       |Âncora Delta Storm Vox                              |0.8464321404702527                |
+|51        |Motor Diesel Tohatsu Evo Zenith 16HP                |0.8439249387982206                |
+|103       |Âncora Delta Swift                                  |0.8439249387982206                |
+|122       |Âncora Danforth Oceanic Helix Flux                  |0.8439249387982206                |
+|67        |Motor de Popa Yamaha Mako 108HP                     |0.8432740427115676                |
+|111       |Boia de Arqueamento Danforth Aero Dash              |0.8432740427115676                |
+|74        |Motor de Popa Honda Torque 228HP                    |0.8395701571521509                |
+|61        |Motor Diesel Honda Prime 84HP                       |0.8355099778440254                |
+|128       |Cabo de Nylon Delta Velocity Core Mako              |0.8355099778440254                |
+|127       |Corrente Danforth Hydro                             |0.8318003918560588                |
+|45        |GPS Furuno Current                                  |0.8285098499285154                |
+|72        |Motor de Popa Volvo Hydro Dash 256HP                |0.8250000000000004                |
+|138       |Âncora Danforth Impulse                             |0.8250000000000004                |
+|139       |Boia de Arqueamento Delta Peak Boost Thrust         |0.8250000000000004                |
+|17        |Rádio AIS Oceanic Pulse                             |0.8169217288768311                |
+|30        |Transponder AIS Boost                               |0.8169217288768311                |
+|125       |Corrente Delta Axis                                 |0.8169217288768311                |
+|25        |Rádio Lowrance Nitro Thrust Barracuda               |0.8148769172359112                |
+|98        |Motor Diesel Parsun Velocity Abyss Orca 235HP       |0.8148769172359112                |
+|65        |Motor de Popa Torqeedo Nautic Swift 223HP           |0.8101914936669337                |
+|112       |Corrente Danforth Tidal                             |0.8101914936669337                |
+|8         |GPS AIS Zen                                         |0.8058066296105569                |
+|34        |Transponder AIS Helix Torque                        |0.8058066296105569                |
+|76        |Motor Diesel Honda Aero 205HP                       |0.8058066296105569                |
+|89        |Motor Elétrico Yamaha Orca Storm Zenith 11HP        |0.8058066296105569                |
+|149       |Cabo de Nylon Bruce Core                            |0.8058066296105569                |
+|16        |Sonda Garmin Axis                                   |0.801783725737273                 |
+|87        |Motor Elétrico Volvo Boost 225HP                    |0.801783725737273                 |
+|145       |Boia de Arqueamento Bruce Barracuda                 |0.801783725737273                 |
+|28        |Piloto Automático AIS Core                          |0.8000000000000004                |
+|119       |Âncora Bruce Aqua                                   |0.8000000000000004                |
+|97        |Motor de Popa Tohatsu Evo 168HP                     |0.7951465679458902                |
+|15        |Radar Garmin Tidal Thrust                           |0.795133222865995                 |
+|31        |Transponder Furuno Pulse Axis                       |0.795133222865995                 |
+|50        |Piloto Automático Simrad Poseidon Magnum            |0.795133222865995                 |
+|52        |Motor Diesel Honda Zen Tidal Mako 26HP              |0.795133222865995                 |
+|77        |Motor Diesel Tohatsu Vector 197HP                   |0.795133222865995                 |
+|80        |Motor de Popa Volvo Maré 69HP                       |0.795133222865995                 |
+|141       |Boia de Arqueamento Bruce Dash Titan Pulse          |0.795133222865995                 |
+|144       |Âncora Delta Hydra Kraken Velocity                  |0.795133222865995                 |
+|147       |Corrente Danforth Force Leviathan Impulse           |0.7951332228659947                |
+|9         |Transponder AIS Titan Pulse                         |0.7905694150420947                |
+|22        |Transponder Furuno Force Ion                        |0.7905694150420947                |
+|39        |GPS Furuno Vector                                   |0.7905694150420947                |
+|63        |Motor Elétrico Torqeedo Ion Orca Vox 186HP          |0.7905694150420947                |
+|79        |Motor Diesel Tohatsu Zenith 60HP                    |0.7905694150420947                |
+|81        |Motor Elétrico Torqeedo Barracuda Magnum Helix 101HP|0.7905694150420947                |
+|114       |Boia de Arqueamento Danforth Tidal Zen Swift        |0.7905694150420947                |
+|26        |Piloto Automático Furuno Core Boost Flux            |0.7901836773196714                |
+|102       |Cabo de Nylon Bruce Nexus                           |0.7863729095926286                |
+|4         |Rádio AIS Hydro Tidal Zen                           |0.784873009489842                 |
+|44        |GPS Simrad Zen Hydra Peak                           |0.784873009489842                 |
+|10        |Piloto Automático Simrad Titan Flux Magnum          |0.7826237921249268                |
+|59        |Motor Diesel Yanmar Hydro Magnum Boost 267HP        |0.7798128673650551                |
+|101       |Cabo de Nylon Delta Vortex                          |0.7798128673650551                |
+|116       |Cabo de Nylon Delta Velocity Oceanic Abyss          |0.7798128673650551                |
+|124       |Cabo de Nylon Danforth Orca Aero                    |0.7798128673650551                |
+|131       |Boia de Arqueamento Delta Zen Boost Vortex          |0.7798128673650551                |
+|137       |Cabo de Nylon Bruce Flux Hydro                      |0.7798128673650551                |
+|142       |Boia de Arqueamento Bruce Nexus Abyss               |0.7798128673650551                |
+|19        |Sonda Lowrance Tidal Storm Vox                      |0.7750576015460305                |
+|96        |Motor de Popa Tohatsu Boost Swift 126HP             |0.7750576015460305                |
+|104       |Cabo de Nylon Delta Zen Vortex Storm                |0.7750576015460305                |
+|126       |Cabo de Nylon Danforth Kinetic                      |0.7750576015460305                |
+|148       |Âncora Delta Force Barracuda Mako                   |0.7750576015460305                |
+|150       |Cabo de Nylon Danforth Magnum Vox                   |0.7750576015460305                |
+|33        |Transponder Garmin Drift Vortex Marlin              |0.7750000000000004                |
+|105       |Cabo de Nylon Danforth Prime                        |0.7706746355884528                |
+|123       |Corrente Danforth Zenith Oceanic Torque             |0.7706746355884528                |
+|48        |GPS Furuno Magnum Drift                             |0.7694837640638661                |
+|130       |Corrente Delta Boost                                |0.7694837640638661                |
+|3         |Radar Furuno Pulse Leviathan                        |0.7642171012073582                |
+|21        |GPS AIS Nautic Thrust                               |0.7642171012073582                |
+|23        |Piloto Automático Furuno Torque Peak                |0.7642171012073582                |
+|37        |GPS Lowrance Evo Storm Drift                        |0.7642171012073582                |
+|46        |Sonda AIS Magnum Boost                              |0.7642171012073582                |
+|69        |Motor de Popa Torqeedo Ultra Impulse 292HP          |0.7642171012073582                |
+|70        |Motor Diesel Parsun Boost Helix Velocity 146HP      |0.7642171012073582                |
+|71        |Motor Elétrico Torqeedo Pulse 300HP                 |0.7642171012073582                |
+|107       |Boia de Arqueamento Bruce Tidal Marlin              |0.7642171012073582                |
+|108       |Boia de Arqueamento Bruce Titan                     |0.7642171012073582                |
+|129       |Boia de Arqueamento Bruce Marlin Hydra              |0.7642171012073582                |
+|134       |Âncora Bruce Core Pulse                             |0.7642171012073582                |
+|118       |Boia de Arqueamento Delta Force Vox                 |0.7595545253127503                |
+|13        |Radar Simrad Boost                                  |0.7592566023652966                |
+|47        |Rádio Simrad Tidal Aqua                             |0.7592566023652966                |
+|49        |Sonda Furuno Swift                                  |0.7592566023652966                |
+|91        |Motor Elétrico Tohatsu Zenith Oceanic 113HP         |0.7592566023652966                |
+|110       |Corrente Bruce Current                              |0.7592566023652966                |
+|113       |Âncora Delta Mako Ultra                             |0.7592566023652966                |
+|36        |Radar Lowrance Aqua Pulse                           |0.7546729424061794                |
+|54        |Motor de Popa Yamaha Evo Dash 155HP                 |0.7546729424061794                |
+|32        |Sonda AIS Impulse Oceanic Zenith                    |0.7538191051195532                |
+|56        |Motor Elétrico Torqeedo Velocity Swift 74HP         |0.7538191051195532                |
+|73        |Motor de Popa Torqeedo Core Hydra Flux 162HP        |0.7538191051195532                |
+|84        |Motor de Popa Torqeedo Zenith Peak Thrust 212HP     |0.7538191051195532                |
+|85        |Motor de Popa Parsun Impulse 162HP                  |0.7538191051195532                |
+|109       |Cabo de Nylon Danforth Evo Aqua Mako                |0.7538191051195532                |
+|2         |Transponder Furuno Marlin                           |0.7483314773547881                |
+|7         |Radar AIS Zen                                       |0.7483314773547881                |
+|14        |Rádio Furuno Zen Swift                              |0.7483314773547881                |
+|40        |Sonda Furuno Mar� Tidal                            |0.7483314773547881                |
+|82        |Motor Elétrico Volvo Nautic Vox 118HP               |0.7483314773547881                |
+|90        |Motor de Popa Yamaha Thrust Marlin Nexus 182HP      |0.7483314773547881                |
+|99        |Motor Elétrico Honda Flux Ultra 273HP               |0.7483314773547881                |
+|106       |Âncora Danforth Nitro Titan Vox                     |0.7483314773547881                |
+|133       |Corrente Bruce Nautic Evo                           |0.7483314773547881                |
+|143       |Âncora Danforth Vector Evo                          |0.7483314773547881                |
+|6         |Transponder AIS Vector                              |0.7438343052617372                |
+|29        |Rádio Simrad Orca                                   |0.7438343052617372                |
+|62        |Motor Diesel Yanmar Velocity 37HP                   |0.7438343052617372                |
+|24        |GPS AIS Orca Marlin Velocity                        |0.7431505414602938                |
+|88        |Motor Diesel Tohatsu Kinetic Poseidon 113HP         |0.7383503845211838                |
+|12        |GPS AIS Drift Flux Vox                              |0.7378647873726217                |
+|20        |Radar AIS Marlin                                    |0.7378647873726217                |
+|58        |Motor de Popa Tohatsu Ion Core Nautic 53HP          |0.7378647873726217                |
+|66        |Motor de Popa Tohatsu Poseidon Helix Prime 135HP    |0.7378647873726217                |
+|136       |Cabo de Nylon Danforth Titan Poseidon               |0.7378647873726217                |
+|41        |GPS Simrad Flow Pulse                               |0.7321402951379645                |
+|57        |Motor de Popa Honda Vector Kinetic 174HP            |0.7321402951379645                |
+|78        |Motor Elétrico Honda Mako Axis 131HP                |0.7321402951379645                |
+|86        |Motor Diesel Volvo Helix Evo Force 144HP            |0.7321402951379645                |
+|92        |Motor Elétrico Yamaha Nautic Kraken 133HP           |0.7321402951379645                |
+|132       |Boia de Arqueamento Danforth Core Vortex            |0.7321402951379645                |
+|140       |Boia de Arqueamento Danforth Torque                 |0.7321402951379645                |
+|55        |Motor Diesel Volvo Flow Oceanic 259HP               |0.7216053531635457                |
+|146       |Corrente Delta Vox Ion                              |0.7216053531635457                |
+|42        |Transponder Lowrance Axis                           |0.7156264473321348                |
+|68        |Motor de Popa Honda Ion Vox Prime 163HP             |0.7156264473321348                |
+|121       |Boia de Arqueamento Delta Nexus                     |0.7156264473321348                |
+|38        |Rádio AIS Force                                     |0.7099522928088307                |
+|117       |Corrente Danforth Zen Abyss Axis                    |0.7099522928088307                |
+|93        |Motor Elétrico Yamaha Flow 204HP                    |0.7050239879106325                |
+|83        |Motor Diesel Yanmar Dash Nitro 184HP                |0.7046642634176442                |
+|64        |Motor Elétrico Yamaha Swift Drift Current 265HP     |0.6987712429686846                |
+|100       |Motor Elétrico Honda Vector Abyss 220HP             |0.6987712429686846                |
+|5         |Piloto Automático Furuno Storm                      |0.6948792289723033                |
+|53        |Motor Elétrico Torqeedo Zen Titan Hydra 129HP       |0.6928203230275507                |
+|60        |Motor de Popa Honda Velocity Drift 258HP            |0.6881023532039757                |
+|120       |Boia de Arqueamento Danforth Flux Tidal             |0.6881023532039757                |
+|43        |Sonda AIS Barracuda                                 |0.675303252441909                 |
+|75        |Motor Diesel Volvo Flow Leviathan Maré 187HP       |0.675303252441909                 |
+|95        |Motor Diesel Honda Leviathan 133HP                  |0.6531561093841243                |
+
+Porém, é importante resssaltar que produtos que tenham uma venda muito maior que outros, dentro do segmento, como o pão numa padaria, tendem a ser compatíveis com quase todos os outros proudtos da análise , por uma questão de popularidade, assim como produtos novos tendem a não se relacionar com os outros durante um tempo, porque terão muitos registros zerados. Essa é uma limmitação do uso desta técnica.
 

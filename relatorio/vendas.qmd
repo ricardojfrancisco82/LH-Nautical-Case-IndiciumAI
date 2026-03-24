@@ -1,7 +1,224 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Mar 24 08:49:04 2026
+---
+title: "Relatório analítico-financeiro"
+author: "Ricardo J. Francisco"
+format: html
+theme: flatly
+toc: true
+code-fold: true
+number-sections: true
+execute:
+    warning: false
+---
+## Relatório Analitico
 
-@author: ricardojfrancisco
-"""
+### Abordagem Custos de Importação x Valor na data da venda
 
+Os clientes idetinficaram que alguns pordutos podem ter sido vendidos abaixo  do custo, por erro operacional, devido a flutuação do câmbio.
+Conforme mencionado em etapas anteriores, a tabela *vendas_2023_2024* em seu campo *total* e a tabela *produtos* em sua coluna *price* registra os preços em reais.
+Entretanto, pelos registros encontrados em *-custos_importacao* os pordutos são adquiridos em dolar, o que pode gerar lucro ou prejuizo excedente, dependendo da flutuação cambial existente entre o epríodo de aquisição da mercadoria e de sua venda.
+Em primeira instância, como não houve armazenamento de valores que nos possam dar um início claro da cotação do dolar na aquisição, visto que a planilha de custos armazena o valored em dolar da compra, e a planilha vendas o valor em reais da venda, precisamos de um mecânismo norteador para que posssamos, minimamente, ter uma dimensão dessa digergência. Para tal, lançaremos mão do índice PTAX, do Banco Central do Brasil.
+A taxa PTAX, que é a taxa de referência do mercado de câmbio no Brasil. Ela é calculada através de quatro janelas de consulta ao longo do dia com as instituições financeiras, pelo Banco Central.
+O valor final diário que aparece na API é a média aritmética dessas 4 consultas.
+Para o biênio 2023/2024,o valor que a API do BCB entrega (via Olinda/PTAX) não é uma extração pontual de um único momento, mas sim uma média calculada., a qual poderá ser consultada [aqui.] ('https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='01-01-2023'\&@dataFinalCotacao='12-31-2024'\&$top=1000\&$skip=0\&$format=text/csv\&$select=cotacaoVenda,dataHoraCotacao')
+Após inspeção, não foram encontradas operações onde o valor de prejuizo sejam maiores que os de receita na operação, sendo que para tal exibimos aqui os elementos que mais perto chegaram disso
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+
+agregacao_produto = pd.read_csv('data/processed/Q4_agregacao_produto.csv')
+produtos = pd.read_csv('data/processed/Q2_produtos_clean.csv')
+
+# agregacao_produto['percentual_perda'] - a perda relativa já processada
+# agregacao_produto['id_product'] - id do produto
+# produtos['code'] - id do produto
+# produtos['name']
+
+# 1. Preparando os dados (Merge entre a agregação e a tabela de produtos)
+# Ajuste os nomes das colunas conforme seu DataFrame real
+df_final = agregacao_produto.merge(produtos, left_on='id_product', right_on='code')
+
+# 2. Configuração do Gráfico
+plt.figure(figsize=(12, 7))
+n, bins, patches = plt.hist(df_final['percentual_perda'], bins=15, color='skyblue', edgecolor='white', alpha=0.8)
+
+# 3. Colorindo as faixas de risco (Opcional, mas visualmente impactante)
+for i in range(len(patches)):
+    if bins[i] > 30:
+        patches[i].set_facecolor('#e74c3c') # Vermelho Crítico
+    elif bins[i] > 15:
+        patches[i].set_facecolor('#f1c40f') # Amarelo Alerta
+    else:
+        patches[i].set_facecolor('#2ecc71') # Verde Aceitável
+
+# 4. Customização Estética
+plt.title('Distribuição de Produtos por Impacto de Prejuízo Relativo', fontsize=14, fontweight='bold')
+plt.xlabel('Percentual de Perda sobre a Receita (%)', fontsize=12)
+plt.ylabel('Quantidade de Produtos (SKUs)', fontsize=12)
+plt.grid(axis='y', linestyle='--', alpha=0.3)
+
+# Adicionando uma linha média para referência
+plt.axvline(df_final['percentual_perda'].mean(), color='black', linestyle='dashed', linewidth=1, label=f"Média: {df_final['percentual_perda'].mean():.2f}%")
+plt.legend()
+
+# Definindo os elementos da legenda manualmente
+legend_elements = [
+    Line2D([0], [0], color='#2ecc71', lw=4, label='Operação Saudável (0-15%)'),
+    Line2D([0], [0], color='#f1c40f', lw=4, label='Atenção/Margem Estreita (15-30%)'),
+    Line2D([0], [0], color='#e74c3c', lw=4, label='Crítico/Prejuízo Elevado (>30%)'),
+    Line2D([0], [0], color='black', linestyle='--', label='Média de Perda Relativa')
+]
+
+# Adicionando ao gráfico existente
+plt.legend(handles=legend_elements, loc='upper right', title="Zonas de Risco")
+# 5. Exibição
+plt.tight_layout()
+plt.show()
+
+``` 
+Nossa análise categoriza os produtos pelo Índice de Eficiência de Custo (IEC). Produtos na Zona Crítica (vermelho) possuem um custo de importação tão descolado do preço de venda que quase 50% da receita gerada por eles é consumida apenas para cobrir a variação negativa da operação. Isso indica que, para esses itens, não estamos apenas deixando de lucrar, estamos 'comprando' faturamento com alto prejuízo operacional.
+Dito isso, os seguintes itens encontram-se na zona crítica e merecem atenção quanto a questão de faturamento:
+|code|                   Nome                              | receita_total_brl | prejuizo_total_brl |percentual_perda|
+|----|-----------------------------------------------------|-------------------|--------------------|----------------|
+|  42|Transponder Lowrance Axis                            |         5634484.20|          2702417.32|           47.96|
+| 137|Âncora Danforth Impulse                              |         9843071.55|          4617548.75|           46.91|
+| 136|Cabo de Nylon Bruce Flux Hydro                       |         3842390.25|          1783852.66|           46.43|
+|  13|Radar Simrad Boost                                   |        12052536.50|          5221353.27|           43.32|
+|  54|Motor de Popa Yamaha Evo Dash 155HP                  |       158311250.60|         67701098.06|           42.76|
+|  72|Motor de Popa Volvo Hydro Dash 256HP                 |       131348029.65|         54116427.56|           41.20|
+|  81|Motor Elétrico Torqeedo Barracuda Magnum Helix 101HP |       429089251.25|        172838966.49|           40.28|
+| 100|Motor Elétrico Honda Vector Abyss 220HP              |       244372307.55|         97522063.23|           39.91|
+| 104|Cabo de Nylon Delta Zen Vortex Storm                 |         3855950.50|          1536093.43|           39.84|
+|  44|GPS Simrad Zen Hydra Peak                            |        40001578.00|         15555823.63|           38.89|
+
+Notem que a soma dos prejuizos apenas dessa parcel ultrapassam os R$ 4000 milhões de prejuizo operacional.
+
+### Abordagem Vendas x Dia da Semana
+
+Tendo em vista que a loja atende sete dias por semana, qual o dia que há maior e menor media de vendas?
+Essa pergunta, da forma daquais os dados estavam estrutrados incialmente torna-se difícil de analisar, tendo por base que os bancos de dados não são relacionados e não compartilham de uma dimensão-calendário, que consiga apoiar essas datas de uma maneira minimamente satisfatório, o que executamos para podermos fazer tal analise.
+Esse expediente se faz necessário tendo em vista que a dimensão calendário é uma espécie de âncora balizadora das questões de data no banco de dados, evitando assim uma descentralização exageradas dessas mesmas datas, o que ocasionaria problemas e divergências entre registros e determinadas consultas onde o fator dia fosse preponderante. Outro ponto seriam os "dias vazios" em que não houvesse venda, ou registros, que poderiam gerar quebras em analises lineares, ou até mesmo interferir negativamente em medias.
+```{sql}
+-- Criar uma tabela de Dimensão Calendário
+CREATE TABLE dim_calendario (
+    data_id DATE PRIMARY KEY,
+    ano INTEGER,
+    mes INTEGER,
+    dia_semana_num INTEGER,
+    dia_semana_nome TEXT,
+    eh_final_semana INTEGER
+);
+
+ --Gerar e inserir os dados usando uma CTE Recursiva
+INSERT INTO dim_calendario
+WITH RECURSIVE gera_datas(d) AS (
+    -- Data de início baseada no seu contexto (vendas_2023_2024)
+    VALUES('2023-01-01')
+    UNION ALL
+    -- Adiciona 1 dia sucessivamente até o fim de 2024
+    SELECT date(d, '+1 day') FROM gera_datas WHERE d < '2024-12-31'
+)
+SELECT 
+    d AS data_id,
+    strftime('%Y', d) AS ano,
+    strftime('%m', d) AS mes,
+    strftime('%w', d) AS dia_semana_num, -- 0=Domingo, 1=Segunda, ..., 6=Sábado
+    CASE strftime('%w', d)
+        WHEN '0' THEN 'Domingo'
+        WHEN '1' THEN 'Segunda-feira'
+        WHEN '2' THEN 'Terça-feira'
+        WHEN '3' THEN 'Quarta-feira'
+        WHEN '4' THEN 'Quinta-feira'
+        WHEN '5' THEN 'Sexta-feira'
+        WHEN '6' THEN 'Sábado'
+    END AS dia_semana_nome,
+    CASE WHEN strftime('%w', d) IN ('0', '6') THEN 1 ELSE 0 END AS eh_final_semana
+FROM gera_datas;
+
+-- LEFT JOIN entre vendas e calendario, para as vendas totais diárias
+
+SELECT
+	dc.data_id, 
+	dc.dia_semana_nome,
+	--COALESCE Substituui Nulos por zero, caso não haja vendas (efeito de media)
+	COALESCE(SUM(v.total), 0) AS faturamento_diario -- soma o campo total de vendas, agrupados por dia
+FROM dim_calendario dc 
+-- calendarioa a esquerda para conter todos os dias do ano
+LEFT JOIN vendas_2023_2024 v ON dc.data_id = v.sale_date 
+GROUP BY dc.data_id, dc.dia_semana_nome
+ORDER BY dc.data_id 
+
+
+-- Que vira um subconsulta para obtermos as medias de vendas por dia da semana
+
+SELECT 
+    dia_semana_nome,
+    ROUND(AVG(faturamento_diario), 2) AS media_vendas
+FROM (
+    -- LEFT JOIN entre vendas e calendario, para as vendas totais diárias
+    SELECT
+        dc.data_id, 
+        dc.dia_semana_nome,
+        dc.dia_semana_num,
+        COALESCE(SUM(v.total), 0) AS faturamento_diario 
+    FROM dim_calendario dc 
+    LEFT JOIN vendas_2023_2024 v ON dc.data_id = v.sale_date
+    GROUP BY dc.data_id, dc.dia_semana_nome, dc.dia_semana_num
+) AS faturamento_por_data
+GROUP BY dia_semana_nome, dia_semana_num
+ORDER BY dia_semana_num DESC;
+```
+Dito isso, obtivemos 
+dia_semana_nome|media_vendas|
+---------------|------------|
+Sábado         |  3710540.55|
+Sexta-feira    |  3715003.41|
+Quinta-feira   |  3626232.44|
+Quarta-feira   |  3535265.63|
+Terça-feira    |  3627045.76|
+Segunda-feira  |  3465137.71|
+Domingo        |  3319503.57|
+
+```{python}
+import matplotlib.pyplot as plt
+media_vendas_por_dia = {
+    "Segunda-feira": 3465137.71,
+    "Terça-feira": 3627045.76,
+    "Quarta-feira": 3535265.63,
+    "Quinta-feira": 3626232.44,
+    "Sexta-feira": 3715003.41,
+    "Sábado": 3710540.55,
+    "Domingo": 3319503.57
+}
+# 2. Preparando os eixos
+dias = list(media_vendas_por_dia.keys())
+valores = list(media_vendas_por_dia.values())
+
+# Converter para Milhões para o gráfico ficar mais "limpo"
+valores_em_milhoes = [v / 1_000_000 for v in valores]
+
+# 3. Criando o Gráfico
+plt.figure(figsize=(10, 6))
+bars = plt.bar(dias, valores_em_milhoes, color='#3498db', edgecolor='navy', alpha=0.8)
+
+# 4. Customização
+plt.title('Média de Faturamento Diário por Dia da Semana (2023-2024)', fontsize=14, fontweight='bold', pad=20)
+plt.ylabel('Faturamento Médio (R$ Milhões)', fontsize=12)
+plt.xlabel('Dia da Semana', fontsize=12)
+plt.ylim(0, max(valores_em_milhoes) * 1.2) # Espaço extra no topo para os rótulos
+plt.grid(axis='y', linestyle='--', alpha=0.6)
+
+# Adicionando os valores em cima de cada barra
+for bar in bars:
+    yval = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width()/2, yval + 0.05, f'R$ {yval:.2f}M', 
+             ha='center', va='bottom', fontweight='bold', color='navy')
+
+plt.tight_layout()
+plt.show()
+```
+Temos: 
+* Pico de Vendas: A Sexta-feira apresenta a maior média de faturamento ($R\$ 3,71M$), seguida de perto pelo Sábado. Isso indica uma concentração de demanda no final da semana útil e início do fim de semana.
+* Vale de Vendas: O Domingo é o dia de menor performance ($R\$ 3,31M$), representando uma queda de aproximadamente 10,6% em relação ao pico da Sexta-feira.
+* Estabilidade: Entre Terça e Quinta-feira, as vendas são extremamente estáveis, orbitando a casa dos $R\$ 3,6M$.

@@ -1,5 +1,5 @@
 ---
-title: "EDA - Análise exploratória de Dados"
+title: "ETL - Extração, Transformação e Carregamento de Dados"
 author: "Ricardo J. Francisco"
 format: html
 theme: flatly
@@ -7,7 +7,7 @@ toc: true
 code-fold: true
 number-sections: true
 execute:
-warning: false
+    warning: false
 ---
 
 ## Extração, transformação e carregamento dos dados
@@ -72,17 +72,17 @@ Para garantir a reprodutibilidade e a manutenção do projeto, os scripts de pro
 📂 Pasta: src/py_etl/
 Esta pasta centraliza toda a inteligência de transformação de dados antes da carga no banco de dados SQLite.
 
-Converter JSON.py:
-Função: Script utilitário responsável pela leitura dos arquivos brutos em formato JSON (clientes_crm.json e custos_importacao.json).
+*Converter JSON.py:*
+Função: Script utilitário responsável pela leitura dos arquivos brutos em formato JSON (*clientes_crm.json* e *custos_importacao.json*).
 Ação: Realiza o parsing inicial e lida com codificações de caracteres (UTF-8) para evitar erros de leitura.
 
-Q2_normalizar_produtos.py:
+*Q2_normalizar_produtos.py:*
 Função: Focado na Questão 2 do desafio.
-Ação: Realiza a limpeza da tabela de produtos, tratando as categorias inconsistentes, removendo duplicatas e padronizando os preços para o formato numérico (float).
+Ação: Realiza a limpeza da tabela de produtos, tratando as categorias inconsistentes, removendo duplicatas e padronizando os preços para o formato numérico (*float*).
 
-Q3_Normalizar_custos_importacao.py:
+*Q3_Normalizar_custos_importacao.py:*
 Função: Focado na Questão 3 do desafio.
-Ação: Responsável pela tarefa mais complexa da ETL — o "achatamento" (flattening) das listas de histórico de preços e datas contidas no JSON original, transformando-as em registros tabulares para o banco relacional.
+Ação: Responsável pela tarefa mais complexa da ETL — o "achatamento" (*flattening*) das listas de histórico de preços e datas contidas no JSON original, transformando-as em registros tabulares para o banco relacional.
 
 ## Fluxo de Dados (Lineage)
 

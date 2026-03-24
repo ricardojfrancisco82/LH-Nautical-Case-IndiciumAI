@@ -1,7 +1,42 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Mar 24 08:49:45 2026
+---
+title: "Conclusões"
+author: "Ricardo J. Francisco"
+format: html
+theme: flatly
+toc: true
+code-fold: true
+number-sections: true
+execute:
+    warning: false
+---
 
-@author: ricardojfrancisco
-"""
+## Conclusões
 
+A análise revelou:
+* Um volume robusto de vendas (média de R$ 3,6M/dia, com picos às sextas e sábados), 
+* Mas expôs problemas críticos como outliers em valores altos, 
+* Prejuízos operacionais em até 48% da receita para itens como transponders e motores (devido a flutuações cambiais via PTAX), 
+* A necessidade de normalização em clientes/produtos.
+​
+
+## Recomendações
+
+### Dados
+
+Recomendamos, quando pensamos em gestão de dados:
+* A implementação um pipeline ETL contínuo dos dagdos gerados na poperação da empresa, incluindo
+* Unificação em um sistema de banco de dados relacional;
+* Reorganização dos bancos através do esquema fato-dimensões, lançando mão de dimensões como cotação do dolar, calendárioo, CEP para organização de endereços, categoria de produtos (a fim de evitar repetiçoes, e buscar otimizar o desempenho);
+* Criação de "constraints" (regras de limitação de inserção e alteração de dados), gatilhos e funções para manter as tabelas dimensão atualizadas e utilizáveis; 
+* A aplicação cotidiana de modelos simples de previsão (como médias móveis com MAE ~1) e sistemas de recomendação por similaridade de cosseno para otimizar estoque e e-commerce, até haverem condiçoes de doados e comerciais para ferramentas mais predfcisas e robustas;
+
+Esses passos transformarão dados caóticos em insights acionáveis, elevando a gestão da LH Nautical.
+
+
+### Negócios
+
+Os dados nos dizem que:
+* A empresa precisa trazer no seu portfolio produtos nacionais, menos vulneráveis aà cotação do dólar;
+* Além disso, há a necessidade de, aproveitando a opretuinidade do *e-commerce*, de diversificar seu portfolio também no que toca a valor dos itens;
+* Um ponto interessante seria investir em linhas mais nodestas, voltada a prática de peca esportiva em águas doces, com mateirias e modelos mais baratos, o que, com o tempo, poderiam dar um maior folegoàs vendas;
+* Ainda nnesse sentido, acreditamos que personalizar as linhas vinculando-as a grandes pontos de interesse turístico de pesca esportiva possa gerar bosn resultados;

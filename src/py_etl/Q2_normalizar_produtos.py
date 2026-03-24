@@ -14,7 +14,7 @@ Created on Wed Mar 18 18:01:12 2026
 import pandas as pd
 import numpy as np
 
-produtos_original = pd.read_csv(r'C:/Users/ricardojfrancisco/Desktop/Desafio Indicium/Arquivos originais/produtos_raw.csv')
+produtos_original = pd.read_csv('data/raw/produtos_raw.csv')
 
 # Verifica a estrutiura básica e valores da tabela
 print(produtos_original.info())
@@ -51,8 +51,8 @@ produtos_limpa = produtos_original.drop_duplicates()
 
 #salvar as variáveis que precisarão ser demonstradas na analise, e fgerando a tabela de produtos limpa
 exports = {
-    'produtos_duplicados.csv': produtos_duplicados,
-    'produtos_clean.csv': produtos_limpa
+    'data/processed/Q2_produtos_duplicados.csv': produtos_duplicados,
+    'data/processed/Q2_produtos_clean.csv': produtos_limpa
     }
 
 for nome_arquivo, data in exports.items():

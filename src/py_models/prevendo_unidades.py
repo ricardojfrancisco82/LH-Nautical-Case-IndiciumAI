@@ -17,7 +17,7 @@ from sklearn.metrics import mean_absolute_error
 #### Tarefa:
 
 # Para fins de identificação do produto (code 54)
-lista_produtos =  pd.read_csv('C:/Users/ricardojfrancisco/Documents/GitHub/LH-Nautical-Case-IndiciumAI/Questões 2 e 3 - Tratamento de dados/produtos_clean.csv')
+lista_produtos =  pd.read_csv('data/processed/Q2_produtos_clean.csv')
 alvo = lista_produtos[lista_produtos['name'].str.contains('Motor de Popa Yamaha Evo Dash 155HP')]
 id_alvo = 54
     
@@ -27,7 +27,7 @@ id_alvo = 54
     # Garantindo que a coluna ['sale_date'] seja interpretada como data
     # O período de treino deve incluir dados até 31/12/2023.
     # O período de teste deve ser todo o mês de Janeiro de 2024.
-vendas_23_24 = pd.read_csv('C:/Users/ricardojfrancisco/Documents/GitHub/LH-Nautical-Case-IndiciumAI/Questões 4 e 6 - Análise de vendas/vendas_23_24_datas.csv')
+vendas_23_24 = pd.read_csv('data/processed/Q4_vendas_23_24_datas.csv')
 vendas_23_24['sale_date'] = pd.to_datetime(vendas_23_24['sale_date'])
 vendas_motor = vendas_23_24[vendas_23_24['id_product'] == id_alvo].copy()
 base_treino =vendas_motor[vendas_motor['sale_date'].dt.year == 2023]
@@ -53,6 +53,6 @@ comparativo.columns = ['Data', 'Venda_Real', 'Previsao_MM7']
 comparativo['Erro_Absoluto'] = abs(comparativo['Venda_Real'] - comparativo['Previsao_MM7'])
 mae_final = mean_absolute_error(comparativo['Venda_Real'], comparativo['Previsao_MM7'])
 
-comparativo.to_csv('C:/Users/ricardojfrancisco/Documents/GitHub/LH-Nautical-Case-IndiciumAI/Questão 7 - Previsão de Demandas/prev_und.csv')
+comparativo.to_csv('data/processed/Q7_prev_und.csv')
 
 print(comparativo.iloc[0:6])

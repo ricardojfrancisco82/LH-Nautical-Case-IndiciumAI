@@ -10,8 +10,8 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 # importando os dados de trabalho
-vendas_23_24 = pd.read_csv('C:/Users/ricardojfrancisco/Documents/GitHub/LH-Nautical-Case-IndiciumAI/Questões 4 e 6 - Análise de vendas/vendas_23_24_datas.csv')
-lista_produtos =  pd.read_csv('C:/Users/ricardojfrancisco/Documents/GitHub/LH-Nautical-Case-IndiciumAI/Questões 2 e 3 - Tratamento de dados/produtos_clean.csv')
+vendas_23_24 = pd.read_csv('data/processed/Q4_vendas_23_24_datas.csv')
+lista_produtos =  pd.read_csv('data/processed/Q2_produtos_clean.csv')
 alvo = lista_produtos[lista_produtos['name'].str.contains('GPS Garmin Vortex Maré Drift')]
     
 
@@ -51,4 +51,4 @@ similaridade = pd.DataFrame(similaridade_matriz, index=matriz_produtos.index, co
 id_alvo = 27
 rank_similares = similaridade[id_alvo].sort_values(ascending=False).drop(id_alvo)
 
-rank_similares.to_csv('C:/Users/ricardojfrancisco/Documents/GitHub/LH-Nautical-Case-IndiciumAI/Questão 8 - Sistema de recomendações/rank_similares.csv')
+rank_similares.to_csv('data/processed/Q8_rank_similares.csv')

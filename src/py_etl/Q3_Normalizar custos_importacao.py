@@ -9,7 +9,7 @@ import pandas as pd
 import json
 
 # Carregar o arquivo
-with open('C:/Users/ricardojfrancisco/Desktop/Desafio Indicium/Arquivos originais/custos_importacao.json', encoding='utf-8') as f:
+with open('data/raw/custos_importacao.json', encoding='utf-8') as f:
     data = json.load(f)
 
 # "Achata" o JSON: transforma a lista historic_data em linhas, 
@@ -46,4 +46,4 @@ custos_importacao['start_date'] = pd.to_datetime(custos_importacao['start_date']
 print(custos_importacao.dtypes)
 
 # importar novo arquivo em CSV
-custos_importacao.to_csv('custos_importacao_normalizado.csv', index=False, sep=',', encoding='utf-8-sig')
+custos_importacao.to_csv('data/processed/Q3_custos_importacao_normalizado.csv', index=False, sep=',', encoding='utf-8-sig')

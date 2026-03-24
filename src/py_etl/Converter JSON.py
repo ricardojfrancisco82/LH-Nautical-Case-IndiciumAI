@@ -11,11 +11,11 @@ import json
 
 # 1. Carregar o JSON
 # Se o JSON for uma lista simples: [{"col1": 1}, {"col1": 2}]
-df = pd.read_json('cliente_crm.json')
+df = pd.read_json('data/raw/clientes_crm.json')
 
 # 2. Conectar ao banco que você criou no DBeaver
 # Use o caminho completo do arquivo .db
-conn = sqlite3.connect('C:/Users/ricardojfrancisco/Desktop/Desafio Indicium/DB/cliente_crm.db')
+conn = sqlite3.connect('data/processed/DB/clientes_crm.db')
 
 # 3. Criar a tabela automaticamente
 # O nome da tabela será o que você definir em 'name'
