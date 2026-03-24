@@ -6,6 +6,7 @@
 ![NumPy](https://img.shields.io/static/v1?label=NumPy\&labelColor=navy\&message=ok!%E2%9C%94\&style=plastic\&color=lightblue\&logo=numpy\&logoColor=lightblue)
 ![Scikit-learn](https://img.shields.io/static/v1?label=Scikit-learn\&labelColor=navy\&message=ok!%E2%9C%94\&style=plastic\&color=lightblue\&logo=scikitlearn\&logoColor=lightblue)
 ![Prophet](https://img.shields.io/static/v1?label=Prophet&labelColor=006699&message=ok!%E2%9C%94&style=plastic&color=008080&logo=facebook&logoColor=white)
+![Quarto](https://img.shields.io/static/v1?label=Quarto&labelColor=202124&message=Rendered!%E2%9C%94&style=plastic&color=75aadb&logo=quarto&logoColor=75aadb)
 
 🌊 **Case LH Nautical - Programa Indicium Lighthouse 2026**
 
