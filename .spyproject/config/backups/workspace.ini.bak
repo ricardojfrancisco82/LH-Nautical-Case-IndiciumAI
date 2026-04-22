@@ -1,0 +1,12 @@
+[workspace]
+restore_data_on_startup = True
+save_data_on_exit = True
+save_history = True
+save_non_project_files = False
+project_type = 'empty-project-type'
+recent_files = ['src\\py_etl\\Q2_normalizar_produtos.py', 'src\\py_etl\\Converter JSON.py', 'src\\py_etl\\Q3_Normalizar custos_importacao.py', 'src\\py_models\\prevendo_unidades_qtd.py', 'src\\py_models\\prevendo_unidades.py']
+
+[main]
+version = 0.2.0
+recent_files = []
+

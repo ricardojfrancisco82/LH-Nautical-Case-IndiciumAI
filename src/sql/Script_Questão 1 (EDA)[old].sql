@@ -1,10 +1,10 @@
 /* Verificar o numero total de registros*/
 
-SELECT COUNT (*) AS total_registros FROM vendas_2023_2024
+SELECT COUNT (*) AS total_registros FROM vendas_2023_2024;
 
 -- Verificar o número de colunas da tabela e seus rótulos
 
-PRAGMA table_info('vendas_2023_2024')
+DESCRIBE vendas_2023_2024;
 
 -- Verificar o intervalo de datas em sales_date
 
